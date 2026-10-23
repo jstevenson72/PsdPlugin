@@ -10,6 +10,9 @@
 *.user
 *.sln.docstates
 
+# Visual Studio workspace state (.vs folder)
+.vs/
+
 # Build results
 Build/*.zip
 [Dd]ebug/
