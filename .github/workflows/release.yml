@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  push:
+    tags: [ 'v*' ]
+
+permissions:
+  contents: write
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+  # Keep in sync with the values in ci.yml.
+  PAINTNET_VERSION: 5.200.9772.9330
+  PAINTNET_TAG: v5.2-beta.5.200.9772.9330
+
+jobs:
+  release:
+    name: Build and publish
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 11.0.x
+
+      - name: Cache Paint.NET portable
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/paintnet
+          key: paintnet-${{ env.PAINTNET_VERSION }}-portable-x64
+
+      - name: Fetch Paint.NET
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP 'paintnet'
+          if (Test-Path (Join-Path $dir 'PaintDotNet.Core.dll')) {
+            Write-Host "Paint.NET $env:PAINTNET_VERSION is already available in $dir"
+            return
+          }
+          $zip = Join-Path $env:RUNNER_TEMP 'paintnet-portable.zip'
+          $url = "https://github.com/paintdotnet/release/releases/download/$env:PAINTNET_TAG/paint.net.$env:PAINTNET_VERSION.portable.x64.zip"
+          Write-Host "Downloading $url"
+          Invoke-WebRequest -Uri $url -OutFile $zip -UseBasicParsing
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          Expand-Archive -Path $zip -DestinationPath $dir -Force
+          Remove-Item $zip -Force
+
+      - name: Restore
+        run: dotnet restore PSDPlugin.sln
+
+      - name: Build
+        run: dotnet build PSDPlugin.sln -c Release --no-restore --nologo "/p:PaintDotNetDir=$env:RUNNER_TEMP\paintnet"
+
+      - name: Test
+        run: dotnet test PSDPlugin.sln -c Release --no-build --nologo
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $out = Join-Path $env:RUNNER_TEMP 'package'
+          New-Item -ItemType Directory -Force -Path $out | Out-Null
+          Copy-Item 'PhotoShopFileType\bin\Release\PhotoShop.dll', 'License.txt', 'Readme.txt' -Destination $out
+          Compress-Archive -Path (Join-Path $out '*') -DestinationPath 'PSDPlugin.zip' -Force
+
+      - name: Publish release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          $notes = @(
+            '### Installation'
+            ''
+            '1. Exit all instances of Paint.NET.'
+            '2. Copy `PhotoShop.dll` from the attached `PSDPlugin.zip` into the `FileTypes` folder of your Paint.NET install, usually `C:\Program Files\Paint.NET\FileTypes\`.'
+            '3. Restart Paint.NET.'
+            ''
+            'Requires **Paint.NET 5.2 or newer** (.NET 11). Releases up to 2.5.0 were built for Paint.NET 4.x and will not load in 5.2 - delete the old `PhotoShop.dll` before installing this one.'
+          ) -join "`n"
+          gh release create $tag PSDPlugin.zip --title "PSDPlugin $tag" --notes $notes --verify-tag
