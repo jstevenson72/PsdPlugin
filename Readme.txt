@@ -52,7 +52,8 @@ Continuous integration
 
 GitHub Actions (.github/workflows/ci.yml) builds and tests the plugin on
 every pull request and on every push to master, and publishes a PSDPlugin.zip
-artifact containing PhotoShop.dll, License.txt and Readme.txt.
+artifact containing PhotoShop.dll, LICENSE.txt, THIRD-PARTY-NOTICES.txt and
+Readme.txt.
 
 Paint.NET itself is not redistributable, so CI downloads the matching
 portable build from the official release page, extracts it, and points the
@@ -67,5 +68,6 @@ PAINTNET_TAG variables at the top of the workflow; update both together.
 Licensing
 ----------
 
-This software is open-source, under the MIT and BSD licenses.  Please see
-LICENSE.TXT for complete licensing and attribution information.
+This software is open-source, under the MIT and BSD licenses.  See LICENSE.TXT
+for the MIT terms, and THIRD-PARTY-NOTICES.TXT for the BSD terms and the
+attribution they require.

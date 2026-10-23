@@ -69,5 +69,8 @@ attached.
 
 ## Licence
 
-Open source under the MIT and BSD licences; see [License.txt](License.txt) for
-the full text and attribution. Original work by the PsdPlugin contributors.
+MIT, with portions of the PSD parsing code under BSD 3-Clause. See
+[LICENSE.txt](LICENSE.txt) for the MIT terms, and
+[THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) for the BSD terms and the
+attribution they require. Original work by Frank Blumenberg and Tao Yue; the
+BSD portions derive from Jonas Beckeman's Yet Another PSD Parser.
