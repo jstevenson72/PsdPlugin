@@ -1,4 +1,4 @@
-﻿MIT License
+MIT License
 
 Copyright (c) 2006-2007 Frank Blumenberg
 Copyright (c) 2010-2020 Tao Yue
@@ -20,9 +20,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-Portions of this software are included under the BSD 3-Clause License rather
-than the MIT License. See THIRD-PARTY-NOTICES.txt for those terms and for
-the files they apply to.
