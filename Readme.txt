@@ -47,6 +47,23 @@ The build output is PhotoShopFileType\bin\Debug\PhotoShop.dll (or
   dotnet test Tests\Tests.csproj
 
 
+Continuous integration
+-----------------------
+
+GitHub Actions (.github/workflows/ci.yml) builds and tests the plugin on
+every pull request and on every push to master, and publishes a PSDPlugin.zip
+artifact containing PhotoShop.dll, License.txt and Readme.txt.
+
+Paint.NET itself is not redistributable, so CI downloads the matching
+portable build from the official release page, extracts it, and points the
+build at it with the same PaintDotNetDir property used locally:
+
+  dotnet build PSDPlugin.sln /p:PaintDotNetDir=<extracted-portable-dir>
+
+The Paint.NET version used by CI is set by the PAINTNET_VERSION and
+PAINTNET_TAG variables at the top of the workflow; update both together.
+
+
 Licensing
 ----------
 
